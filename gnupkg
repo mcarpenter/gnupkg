@@ -1,0 +1,366 @@
+#!/bin/bash -eu
+
+# Package options.
+opt_arch=$(uname -p) # package platform
+opt_category=application # package category
+opt_email=root # pkginfo email
+opt_name='' # name of package (sans prefix)
+opt_prefix=GNU # package name prefix
+opt_vendor='' # package vendor (URL)
+opt_version='' # version of package
+
+# Package creation options.
+opt_build='make'
+opt_configure='./configure --prefix=/usr/local'
+opt_install='make DESTDIR="$DESTDIR" install'
+
+# Miscellaneous options.
+opt_debug=false # retain temporary directories
+opt_stream=false # create a pkg stream
+
+# Echo the basename of this program.
+function execname
+{
+  basename "$0"
+}
+
+# Echo the usage string for this program.
+function usage
+{
+  echo "$(execname) -h | [ -b build_cmd ] [ -c configure_cmd ] [ -d ] [ -i install_cmd ] [ -n ] [ -p pkg_options ] [ -s ] source"
+}
+
+# Write the arguments to stderr prefixed by the program name.
+function warn
+{
+  echo "$(execname): $*">&2
+}
+
+# Write arguments to stderr and exit with return code 1.
+function error
+{
+  warn "$*"
+  exit 1
+}
+
+# Return the package version.
+function version
+{
+  local src="$1"
+  if [[ -z $opt_version ]] ; then
+    if [[ -d $src ]] ; then
+      local src_base="$src"
+    else
+      local extension=$(tarball_extension "$src")
+      local src_base=$(basename "$src" | sed "s/$extension//")
+    fi
+    local version=$(echo "$src_base" | sed "s/.*-//")
+    [[ -z $version ]] && error 'Could not determine package version'
+    echo "$version"
+  else
+    echo "$opt_version"
+  fi
+}
+
+# Return the package name.
+function name
+{
+  local src="$1"
+  if [[ -z $opt_name ]] ; then
+    local src_base=$(basename "$src")
+    local name=$(echo "$src_base" | sed 's/\(.*\)-.*/\1/')
+    [[ -z $name ]] && error 'Could not determine package name'
+    echo "$name"
+  else
+    echo "$opt_name"
+  fi
+  exit
+}
+
+# Echo the package name constructed from the source and the prefix option.
+function pkg
+{
+  local src="$1"
+  local name=$(name "$src")
+  echo "$opt_prefix$name"
+}
+
+# Echo the package stream name constructed from the source, prefix option
+# and local system parameters.
+function pkgstream
+{
+  local src="$1"
+  local pkg=$(pkg "$src")
+  local version=$(version "$src")
+  local system=$(uname -s)
+  local release=$(uname -r)
+  echo "$pkg-$version-$system-$release-$opt_arch"
+}
+
+# Return the generic extension of the tarball: .tar, .tar.gz, .tar.bz2
+# .tgz is expanded to .tar.gz.
+function tarball_extension
+{
+  if [[ ${tarball:(-4)} == .tar ]] ; then
+    echo .tar
+  elif [[ ${tarball:(-7)} == .tar.gz || ${tarball:(-4)} == .tgz ]] ; then
+    echo .tar.gz
+  elif [[ ${tarball:(-8)} == .tar.bz2 ]] ; then
+    echo .tar.bz2
+  else
+    error "Unrecognized tarball filename extension for \`$tarball\'" 
+  fi
+}
+
+# Unpack the (optionally compressed) tarball into the given build directory.
+function unpack_tarball
+{
+  local tarball="$1"
+  local build_dir="$2"
+  local extension=$(tarball_extension "$tarball")
+  [[ -z $extension ]] && exit 1
+  local gtar_flags='xfC'
+  if [[ $extension == .tar ]] ; then
+    :
+  elif [[ $extension == .tar.gz ]] ; then
+    gtar_flags="z$gtar_flags"
+  elif [[ $extension == .tar.bz2 ]] ; then
+    gtar_flags="j$gtar_flags"
+  fi
+  gtar "$gtar_flags" "$tarball" "$build_dir"
+}
+
+# Configure the package.
+function pkg_configure
+{
+  local build_dir="$1"
+  (cd "$build_dir" && ($opt_configure || exit 1) || exit 1)
+}
+
+# Build and install the package.
+function pkg_build
+{
+  local build_dir="$1"
+  (cd "$build_dir" && ($opt_build || exit 1) || exit 1)
+}
+
+# Install the package.
+function pkg_install
+{
+  local build_dir="$1"
+  local install_dir="$2"
+  # Use subshell for opt_install so that we can use compound command
+  # (eg opt_install="foo; bar") and also so that DESTDIR does not
+  # pollute the current environment.
+  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_install) || exit 1) || exit 1)
+}
+
+# Create a checkinstall file that checks that the installation architecture
+# matches the package (or not, if "-a all" was given).
+function make_checkinstall
+{
+  local build_dir_base="$1"
+  local checkinstall="$build_dir_base/checkinstall"
+  if [[ $opt_arch == all ]] ; then
+  cat > "$checkinstall" <<EOF
+#!/bin/sh
+exit 0
+EOF
+  else
+  cat > "$checkinstall" <<EOF
+#!/bin/sh
+expected_platform="$opt_arch"
+platform=`/sbin/uname -p`
+if [ \$platform != \$expected_platform ]; then
+        echo "Error: This package must be installed on \$expected_platform platform"
+        exit 1
+fi
+exit 0
+EOF
+  fi
+}
+
+# Create an empty XXX depend(4) file for inclusion in the package.
+function make_depend
+{
+  local build_dir_base="$1"
+  touch "$build_dir_base/depend"
+}
+
+# Create the package prototype(4) file.
+function make_prototype
+{
+  local build_dir_base="$1"
+  local install_dir="$2"
+  local prototype="$build_dir_base/prototype"
+  cat >"$prototype" <<EOF
+i pkginfo
+i checkinstall
+i depend
+EOF
+  (cd "$install_dir" && pkgproto "./usr/local=/usr/local" >> "$prototype" || exit 1)
+}
+
+# Create the package pkginfo(4) file.
+function make_pkginfo
+{
+  local build_dir_base="$1"
+  local src="$2"
+  local pkginfo="$build_dir_base/pkginfo"
+  local name=$(name "$src")
+  local pkg=$(pkg "$src")
+  local version=$(version "$src")
+  cat >"$pkginfo" <<EOF
+PKG="$pkg"
+NAME="$name"
+VERSION="$version"
+ARCH="$opt_arch"
+CLASSES="none"
+CATEGORY="$opt_category"
+VENDOR="$opt_vendor"
+EMAIL="$opt_email"
+ISTATES="S s 1 2 3"
+RSTATES="S s 1 2 3"
+BASEDIR="/"
+EOF
+}
+
+# Create the package from the install directory,
+function make_pkg
+{
+  local build_dir_base="$1"
+  local install_dir="$2"
+  local src="$3"
+  (cd "$build_dir_base" && pkgmk -r"$install_dir" -d. || exit 1)
+  pkg "$src"
+}
+
+# Create the package stream from the package.
+function make_pkgstream
+{
+  local build_dir_base="$1"
+  local src="$2"
+  local pkg=$(pkg "$src")
+  local pkgstream=$(pkgstream "$src")
+  (cd "$build_dir_base" && pkgtrans -s . "$pkgstream" "$pkg" || exit 1)
+  echo $pkgstream
+}
+
+# Returns true if the given string is a URL with an HTTP or FTP scheme.
+function is_url
+{
+  local url="$1"
+  [[ ${url:0:8} == 'https://' || ${url:0:7} == 'http://' || ${url:0:6} == 'ftp://' ]]
+}
+
+# Check to see if we have the PRIV_FILE_CHOWN privilege. This enables
+# the package to be created with files owned by the correct user(s)
+# and group(s).
+function check_chown_self
+{
+  if ! ppriv -v $$ | grep 'E: .*file_chown_self' >/dev/null 2>&1 ; then
+    warn 'Warning: May not be able to set files to correct owner/group.'
+    warn '         Set file_chown_self privilege or run as root.'
+  fi
+}
+
+# Perform packaging.
+function gnupkg
+{
+  local src="$1"
+  check_chown_self
+  local base_dir=$(mktemp -d)
+  if $opt_debug ; then
+    warn "Base directory: $base_dir"
+    warn "Configure:      $opt_configure"
+    warn "Build:          $opt_build"
+    warn "Install:        $opt_install"
+  else
+    trap "rm -rf '$base_dir'" EXIT 
+  fi
+  local build_dir # unpacked source tarball
+  if [[ -d $src ]] ; then
+    build_dir="$src"
+  else
+    if is_url "$src" ; then
+      (cd "$base_dir" && wget "$src")
+      local tarball="$base_dir/$(basename $src)"
+    else
+      local tarball="$src"
+    fi
+    unpack_tarball "$tarball" "$base_dir"
+    build_dir="$base_dir"/$(ls "$base_dir")
+  fi
+  local install_dir="$base_dir/install"
+  local pkg_dir="$base_dir/pkg"
+  mkdir -p "$install_dir/usr/local" "$pkg_dir"
+  pkg_configure "$build_dir"
+  pkg_build "$build_dir"
+  pkg_install "$build_dir" "$install_dir"
+  make_depend "$pkg_dir"
+  make_prototype "$pkg_dir" "$install_dir"
+  make_pkginfo "$pkg_dir" "$src"
+  make_checkinstall "$pkg_dir"
+  local pkg=$(make_pkg "$pkg_dir" "$install_dir" "$src")
+  if $opt_stream ; then
+    local pkgstream=$(make_pkgstream "$pkg_dir" "$src")
+    mv "$pkg_dir/$pkgstream" .
+  else
+    mv "$pkg_dir/$pkg" .
+  fi
+}
+
+# Main program.
+while getopts ':b:c::dhi:p:s' flag
+do
+  case $flag in
+    b)
+      opt_build="$OPTARG"
+      ;;
+    c)
+      opt_configure="$OPTARG"
+      ;;
+    d)
+      opt_debug=true
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    i)
+      opt_install="$OPTARG"
+      ;;
+    p)
+      name_values=$(echo "$OPTARG" | sed 's/,/ /g')
+      for name_value in $name_values ; do
+        read -r name value <<< $(echo "$name_value" | sed 's/=/ /')
+        case "$name" in
+          arch|category|classes|email|name|prefix|vendor|version)
+            eval "opt_$name=$value"
+            ;;
+          *)
+            error "Unrecognized package option \`$name'"
+            exit 1
+            ;;
+        esac
+      done
+      ;;
+    s)
+      opt_stream=true
+      ;;
+    ?)
+      usage
+      error 'Invalid options'
+      ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+if [[ ${#@} != 1 ]] ; then
+  usage
+  error 'Invalid arguments'
+fi
+
+gnupkg "$1"
+

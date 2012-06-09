@@ -1,0 +1,198 @@
+
+
+
+User Commands                                           gnupkg(1)
+
+
+
+NAME
+     gnupkg - create Solaris packages from GNUish sources
+
+
+SYNOPSIS
+     gnupkg -h
+     gnupkg [-b build_cmd] [-c configure_cmd] [-d]
+            [-i install_cmd] [-p pkg_options] [-s] source
+
+
+DESCRIPTION
+     gnupkg is a script to automate the creation of Solaris pack-
+     ages  or  package  streams from source distributions. gnupkg
+     assumes the use of a standard  GNU  autoconf  "configure  &&
+     make  &&  make  install" setup (although each of those steps
+     can be overriden with the -c (configure), -b (build)  or  -i
+     (install)  flags  respectively.  Compound commands should be
+     specified as a string with && separators so  early  exit  on
+     error  is guaranteed.  If the configure or build step should
+     be omitted then pass a colon to the appropriate flag.
+
+
+     The source may either be a source directory or a tarball  of
+     the  form  .tar, .tgz, .tar.gz and .tar.bz2. If the supplied
+     filename looks like an URL then the tarball is  first  down-
+     loaded.  Package  name  and  version  are extracted from the
+     source name (assumes dash separator) and may be overriden by
+     command  line options (see -p below).  Similarly the package
+     prefix  (default:  GNU),  email  (default:  root),  category
+     (default: application) etc may be overridden.
+
+
+OPTIONS
+     The following options are supported:
+
+
+     -b build_cmd        Build command. The default is make.
+
+
+     -c configure_cmd    Configure command. The default is ./con-
+                         figure --prefix=/usr/local.
+
+
+     -d                  Debug mode: do not delete the  temporary
+                         directories created in /tmp on exit.
+
+
+     -i install_cmd      Install command.  The  default  is  make
+                         install.  The environment variable DEST-
+                         DIR is set to beneath the base temporary
+                         directory; explicitly unset this here if
+                         you wish to install elsewhere.  See  GNU
+
+
+
+SunOS 5.10          Last change: 09 Jun 2012                    1
+
+
+
+
+
+
+User Commands                                           gnupkg(1)
+
+
+
+                         Coding  Standards  for  a description of
+                         DESTDIR.
+
+
+     -p pkg_options      Set package options as a comma-separated
+                         string of name=value pairs.  The follow-
+                         ing package option names are supported:
+
+
+          arch                Set the package platform  architec-
+                              ture.  By default the value used is
+                              derived from uname -p.   A  typical
+                              use  is  to  set  this  to  all for
+                              architecture-agnostic packages.
+
+
+          category            Set  the  package   category.   The
+                              default is utility. see pkginfo(4).
+
+
+          email               Set the package email. The  default
+                              is root. see pkginfo(4).
+
+
+          name                Set the package name.  The  default
+                              is   determined   from  the  source
+                              filename.
+
+
+          prefix              Set the package  prefix,  which  is
+                              typically  a stock ticker symbol or
+                              author's initials or  similar  (eg.
+                              SUNW). The default is GNU.
+
+
+          vendor              Set the  package  vendor.  This  is
+                              typically  a  URL.  The  default is
+                              http://gnu.org/.
+
+
+          version             Set  the   package   version.   The
+                              default   is  determined  from  the
+                              source filename.
+
+
+     -s                  Create a package datastream (rather than
+                         a directory structure).
+
+
+ENVIRONMENT VARIABLES
+     DESTDIR
+
+
+
+
+SunOS 5.10          Last change: 09 Jun 2012                    2
+
+
+
+
+
+
+User Commands                                           gnupkg(1)
+
+
+
+                         Destination installation directory. This
+                         is  set  by  default in the installation
+                         task (see -i and GNU  Coding  Standards,
+                         http://www.gnu.org/prep/standards/html_node/DESTDIR.html).
+
+
+FILES
+     /var/sadm/install/contents
+                         Installed package contents file.
+
+
+ATTRIBUTES
+     See attributes(5) for descriptions of the  following  attri-
+     butes:
+
+
+
+     ___________________________________________________________________
+    |       ATTRIBUTE TYPE        |           ATTRIBUTE VALUE          |
+    |_____________________________|____________________________________|
+    | Availability                | http://github.com/mcarpenter/gnupkg|
+    |_____________________________|____________________________________|
+
+
+AUTHOR
+     Martin Carpenter, mcarpenter@free.fr, Copyright 2012.
+
+
+SEE ALSO
+     make(1),  pkgmk(1),  depend(4),  pkginfo(4),   prototype(4),
+     attributes(5)
+
+     GNU Coding Standards, http://www.gnu.org/prep/standards
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SunOS 5.10          Last change: 09 Jun 2012                    3
+
+
+

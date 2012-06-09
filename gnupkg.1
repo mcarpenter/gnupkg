@@ -1,0 +1,253 @@
+.TH gnupkg 1 "09 Jun 2012" "SunOS 5.10" "User Commands"
+.SH NAME
+gnupkg \- create Solaris packages from GNUish sources
+
+.SH SYNOPSIS
+.LP
+.nf
+\fBgnupkg\fR \fB-h\fR
+\fBgnupkg\fR [\fB-b \fIbuild_cmd\fR\fR] [\fB-c \fIconfigure_cmd\fR\fR] [\fB-d\fR]
+       [\fB-i \fIinstall_cmd\fR\fR] [\fB-p \fIpkg_options\fR\fR] [\fB-s\fR] source
+.fi
+
+.SH DESCRIPTION
+.sp
+.LP
+\fBgnupkg\fR is a script to automate the creation of Solaris packages
+or package streams from source distributions. \fBgnupkg\fR
+assumes the use of a standard GNU \fBautoconf\fR "configure && make
+&& make install" setup (although each of those steps can be
+overriden with the \fB-c\fR (configure), \fB-b\fR (build) or \fB-i\fR
+(install) flags respectively. Compound commands should be specified as
+a string with \fb&&\fR separators so early exit on error is guaranteed.
+If the configure or build step should be omitted then pass a colon to
+the appropriate flag.
+.sp
+.LP
+The \fBsource\fR may either be a source directory or a tarball of the
+form .tar, .tgz, .tar.gz and .tar.bz2. If the supplied filename looks
+like an URL then the tarball is first downloaded. Package name and
+version are extracted from the source name (assumes dash separator)
+and may be overriden by command line options (see \fB-p\fR below).
+Similarly the package prefix (default: GNU), email (default: root),
+category (default: application) etc may be overridden.
+
+.SH OPTIONS
+.sp
+.LP
+The following options are supported:
+
+.sp
+.ne 2
+.mk
+.na
+\fB-b \fIbuild_cmd\fR\fR
+.ad
+.RS 20n
+.rt
+Build command. The default is \fImake\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-c \fIconfigure_cmd\fR\fR
+.ad
+.RS 20n
+.rt
+Configure command. The default is \fI./configure --prefix=/usr/local\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-d\fR
+.ad
+.RS 20n
+.rt
+Debug mode: do not delete the temporary directories created in
+\fB/tmp\fR on exit.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-i \fIinstall_cmd\fR\fR
+.ad
+.RS 20n
+.rt
+Install command. The default is \fImake install\fR. The environment
+variable \fBDESTDIR\fR is set to beneath the base temporary directory;
+explicitly \fBunset\fR this here if you wish to install elsewhere.  See
+\fIGNU Coding Standards\fR for a description of \fBDESTDIR\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-p \fIpkg_options\fR\fR
+.ad
+.RS 20n
+.rt
+Set package options as a comma-separated string of \fBname=value\fR pairs.
+The following package option names are supported:
+.RE
+
+.RS 5n
+.sp
+.ne 2
+.mk
+.na
+\fB\fIarch\fR
+.ad
+.RS 20n
+.rt
+Set the package platform architecture. By default the value used is
+derived from \fBuname -p\fR.  A typical use is to set this to \fBall\fR
+for architecture-agnostic packages.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIcategory\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package category. The default is \fButility\fR. see
+\fBpkginfo(4)\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIemail\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package email. The default is \fBroot\fR. see \fBpkginfo(4)\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIname\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package name. The default is determined from the source filename.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIprefix\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package prefix, which is typically a stock ticker symbol or
+author's initials or similar (eg. SUNW). The default is \fBGNU\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIvendor\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package vendor. This is typically a URL. The default is
+\fBhttp://gnu.org/\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIversion\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package version. The default is determined from the source
+filename.
+.RE
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-s\fR
+.ad
+.RS 20n
+.rt
+Create a package datastream (rather than a directory structure).
+.RE
+
+.SH ENVIRONMENT VARIABLES
+.sp
+.ne 2
+.mk
+.na
+\fBDESTDIR\fR
+.ad
+.RS 20n
+.rt
+.LP
+Destination installation directory. This is set by default in the
+installation task (see \fB-i\fR and \fIGNU Coding Standards\fR,
+http://www.gnu.org/prep/standards/html_node/DESTDIR.html).
+.RE
+
+.SH FILES
+.sp
+.ne 2
+.mk
+.na
+\fB/var/sadm/install/contents\fR
+.ad
+.RS 20n
+.rt
+.LP
+Installed package contents file.
+.RE
+
+.SH ATTRIBUTES
+.sp
+.LP
+See \fBattributes\fR(5) for descriptions of the following attributes:
+.sp
+
+.sp
+.TS
+tab() box;
+cw(2.75i) |cw(2.75i)
+lw(2.75i) |lw(2.75i)
+.
+ATTRIBUTE TYPEATTRIBUTE VALUE
+_
+Availabilityhttp://github.com/mcarpenter/gnupkg
+.TE
+
+.SH AUTHOR
+.sp
+.LP
+Martin Carpenter, mcarpenter@free.fr, Copyright 2012.
+
+.SH SEE ALSO
+.sp
+.LP
+\fBmake\fR(1), \fBpkgmk\fR(1), \fBdepend\fR(4), \fBpkginfo\fR(4), \fBprototype\fR(4),
+\fBattributes\fR(5)
+.LP
+\fIGNU Coding Standards\fR, http://www.gnu.org/prep/standards
+
