@@ -1,4 +1,6 @@
 
+ * Remaining pkginfo(4) parameters (eg VSTOCK, SUNW_PKG_ALLZONES)
+
  * No-op flag (-n)
 
  * Extensibility to IPS?
