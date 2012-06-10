@@ -283,13 +283,14 @@ function gnupkg
     build_dir="$src"
   else
     if is_url "$src" ; then
-      (cd "$base_dir" && wget "$src")
+      (cd "$base_dir" && wget "$src") || exit 1
       local tarball="$base_dir/$(basename $src)"
     else
       local tarball="$src"
     fi
-    unpack_tarball "$tarball" "$base_dir"
-    build_dir="$base_dir"/$(ls "$base_dir")
+    mkdir "$base_dir/build"
+    unpack_tarball "$tarball" "$base_dir/build"
+    build_dir="$base_dir/build/"$(ls "$base_dir/build")
   fi
   local install_dir="$base_dir/install"
   local pkg_dir="$base_dir/pkg"
