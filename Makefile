@@ -17,7 +17,7 @@ ARCH=all
 EMAIL=mcarpenter@free.fr
 PREFIX=MJC
 VENDOR=http://github.com/mcarpenter/$(BIN)
-VERSION=0.0.1
+VERSION=0.0.2
 
 
 .PHONY: all
