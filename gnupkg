@@ -264,6 +264,25 @@ function check_chown_self
   fi
 }
 
+# Search for either wget or curl to download a remote source tarball.
+function download_command
+{
+  type -Pf wget >/dev/null 2>&1 && echo 'wget' && return
+  type -Pf curl >/dev/null 2>&1 && echo 'curl -O' && return
+  error 'No download command (curl, wget) found'
+}
+
+# Download the tarball from the given URL to the base directory
+# and return the path to the it.
+function download_tarball
+{
+  local url="$1"
+  local base_dir="$2"
+  local command=$(download_command)
+  ([[ -n $command ]] && cd "$base_dir" && $command "$url") || exit 1
+  echo "$base_dir/$(basename $src)"
+}
+
 # Perform packaging.
 function gnupkg
 {
@@ -283,8 +302,8 @@ function gnupkg
     build_dir="$src"
   else
     if is_url "$src" ; then
-      (cd "$base_dir" && wget "$src") || exit 1
-      local tarball="$base_dir/$(basename $src)"
+      local tarball=$(download_tarball "$src" "$base_dir")
+      [[ -z $tarball ]] && exit 1
     else
       local tarball="$src"
     fi
