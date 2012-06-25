@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+version=0.0.2
+
 # Package options.
 opt_arch=$(uname -p) # package platform
 opt_category=application # package category
@@ -27,7 +29,9 @@ function execname
 # Echo the usage string for this program.
 function usage
 {
-  echo "$(execname) -h | [ -b build_cmd ] [ -c configure_cmd ] [ -d ] [ -i install_cmd ] [ -n ] [ -p pkg_options ] [ -s ] source"
+  echo "$(execname) -h"
+  echo "$(execname) -v"
+  echo "$(execname) [ -b build_cmd ] [ -c configure_cmd ] [ -d ] [ -i install_cmd ] [ -p pkg_options ] [ -s ] source"
 }
 
 # Write the arguments to stderr prefixed by the program name.
@@ -331,7 +335,7 @@ function gnupkg
 }
 
 # Main program.
-while getopts ':b:c::dhi:p:s' flag
+while getopts ':b:c::dhi:p:sv' flag
 do
   case $flag in
     b)
@@ -367,6 +371,10 @@ do
       ;;
     s)
       opt_stream=true
+      ;;
+    v)
+      echo $version
+      exit 0
       ;;
     ?)
       usage

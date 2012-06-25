@@ -6,6 +6,7 @@ gnupkg \- create Solaris packages from GNUish sources
 .LP
 .nf
 \fBgnupkg\fR \fB-h\fR
+\fBgnupkg\fR \fB-v\fR
 \fBgnupkg\fR [\fB-b \fIbuild_cmd\fR\fR] [\fB-c \fIconfigure_cmd\fR\fR] [\fB-d\fR]
        [\fB-i \fIinstall_cmd\fR\fR] [\fB-p \fIpkg_options\fR\fR] [\fB-s\fR] source
 .fi
@@ -191,6 +192,17 @@ filename.
 .RS 20n
 .rt
 Create a package datastream (rather than a directory structure).
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-v\fR
+.ad
+.RS 20n
+.rt
+Print the version of \fBgnupkg\fR on stdout.
 .RE
 
 .SH ENVIRONMENT VARIABLES

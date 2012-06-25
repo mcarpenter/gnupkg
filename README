@@ -11,6 +11,7 @@ NAME
 
 SYNOPSIS
      gnupkg -h
+     gnupkg -v
      gnupkg [-b build_cmd] [-c configure_cmd] [-d]
             [-i install_cmd] [-p pkg_options] [-s] source
 
@@ -56,7 +57,6 @@ OPTIONS
                          install.  The environment variable DEST-
                          DIR is set to beneath the base temporary
                          directory; explicitly unset this here if
-                         you wish to install elsewhere.  See  GNU
 
 
 
@@ -71,6 +71,7 @@ User Commands                                           gnupkg(1)
 
 
 
+                         you wish to install elsewhere.  See  GNU
                          Coding  Standards  for  a description of
                          DESTDIR.
 
@@ -120,8 +121,7 @@ User Commands                                           gnupkg(1)
                          a directory structure).
 
 
-ENVIRONMENT VARIABLES
-     DESTDIR
+     -v                  Print the version of gnupkg on stdout.
 
 
 
@@ -137,6 +137,8 @@ User Commands                                           gnupkg(1)
 
 
 
+ENVIRONMENT VARIABLES
+     DESTDIR
                          Destination installation directory. This
                          is  set  by  default in the installation
                          task (see -i and GNU  Coding  Standards,
@@ -170,8 +172,6 @@ SEE ALSO
      attributes(5)
 
      GNU Coding Standards, http://www.gnu.org/prep/standards
-
-
 
 
 
