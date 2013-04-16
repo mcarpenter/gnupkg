@@ -138,14 +138,14 @@ function unpack_tarball
 function pkg_configure
 {
   local build_dir="$1"
-  (cd "$build_dir" && ($opt_configure || exit 1) || exit 1)
+  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_configure) || exit 1) || exit 1)
 }
 
 # Build and install the package.
 function pkg_build
 {
   local build_dir="$1"
-  (cd "$build_dir" && ($opt_build || exit 1) || exit 1)
+  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_build) || exit 1) || exit 1)
 }
 
 # Install the package.
