@@ -47,6 +47,12 @@ function error
   exit 1
 }
 
+# Return the realpath of the given argument.
+function realpath
+{
+  (cd "$1" && /bin/pwd) # NB. not pwd builtin
+}
+
 # Return the package version.
 function version
 {
@@ -302,8 +308,9 @@ function gnupkg
     trap "rm -rf '$base_dir'" EXIT 
   fi
   local build_dir # unpacked source tarball
-  if [[ -d $src ]] ; then
-    build_dir="$src"
+  if [[ -d $src ]] ; then # also true for links to dirs
+    build_dir=$(realpath "$src")
+    src=$(realpath "$src")
   else
     if is_url "$src" ; then
       local tarball=$(download_tarball "$src" "$base_dir")
