@@ -220,7 +220,10 @@ function make_pkginfo
   local name=$(name "$src")
   local pkg=$(pkg "$src")
   local version=$(version "$src")
-  cat >"$pkginfo" <<EOF
+  if [[ -z $name ]] || [[ -z $pkg ]] || [[ -z $version ]] ; then
+    error 'Failed to create pkginfo file'
+  else
+    cat >"$pkginfo" <<EOF
 PKG="$pkg"
 NAME="$name"
 VERSION="$version"
@@ -233,6 +236,7 @@ ISTATES="S s 1 2 3"
 RSTATES="S s 1 2 3"
 BASEDIR="/"
 EOF
+  fi
 }
 
 # Create the package from the install directory,
@@ -325,12 +329,13 @@ function gnupkg
   local install_dir="$base_dir/install"
   local pkg_dir="$base_dir/pkg"
   mkdir -p "$install_dir/usr/local" "$pkg_dir"
+  # Create pkginfo first as a good sanity check
+  make_pkginfo "$pkg_dir" "$src"
   pkg_configure "$build_dir"
   pkg_build "$build_dir"
   pkg_install "$build_dir" "$install_dir"
   make_depend "$pkg_dir"
   make_prototype "$pkg_dir" "$install_dir"
-  make_pkginfo "$pkg_dir" "$src"
   make_checkinstall "$pkg_dir"
   local pkg=$(make_pkg "$pkg_dir" "$install_dir" "$src")
   if $opt_stream ; then
