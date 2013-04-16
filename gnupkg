@@ -273,7 +273,7 @@ function download_command
 }
 
 # Download the tarball from the given URL to the base directory
-# and return the path to the it.
+# and return the path to it.
 function download_tarball
 {
   local url="$1"
