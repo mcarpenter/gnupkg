@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-version=0.0.2
+version=0.0.3
 
 # Package options.
 opt_arch=$(uname -p) # package platform
