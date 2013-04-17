@@ -1,4 +1,4 @@
-.TH gnupkg 1 "09 Jun 2012" "SunOS 5.10" "User Commands"
+.TH gnupkg 1 "17 Apr 2013" "SunOS 5.10" "User Commands"
 .SH NAME
 gnupkg \- create Solaris packages from GNUish sources
 
@@ -19,19 +19,20 @@ or package streams from source distributions. \fBgnupkg\fR
 assumes the use of a standard GNU \fBautoconf\fR "configure && make
 && make install" setup (although each of those steps can be
 overriden with the \fB-c\fR (configure), \fB-b\fR (build) or \fB-i\fR
-(install) flags respectively. Compound commands should be specified as
+(install) flags respectively). Compound commands should be specified as
 a string with \fb&&\fR separators so early exit on error is guaranteed.
-If the configure or build step should be omitted then pass a colon to
-the appropriate flag.
+If the configure or build step should be omitted then pass a colon (:)
+to the appropriate flag.
 .sp
 .LP
 The \fBsource\fR may either be a source directory or a tarball of the
-form .tar, .tgz, .tar.gz and .tar.bz2. If the supplied filename looks
-like an URL then the tarball is first downloaded. Package name and
-version are extracted from the source name (assumes dash separator)
-and may be overriden by command line options (see \fB-p\fR below).
-Similarly the package prefix (default: GNU), email (default: root),
-category (default: application) etc may be overridden.
+form .tar, .tgz, .tar.gz or .tar.bz2. If the supplied filename looks
+like an URL then the tarball is first downloaded using either
+\fBwget\fR or \fBcurl\fB. Package name and version are extracted from
+the source name (assumes dash separator) and may be overriden by
+command line options (see \fB-p\fR below).  Similarly the package
+prefix (default: GNU), email (default: root), category (default:
+application), etc may also all be overridden.
 
 .SH OPTIONS
 .sp
@@ -70,6 +71,17 @@ Configure command. The default is \fI./configure --prefix=/usr/local\fR.
 .rt
 Debug mode: do not delete the temporary directories created in
 \fB/tmp\fR on exit.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB-h\fR
+.ad
+.RS 20n
+.rt
+Print help on stdout and exit.
 .RE
 
 .sp
@@ -202,7 +214,7 @@ Create a package datastream (rather than a directory structure).
 .ad
 .RS 20n
 .rt
-Print the version of \fBgnupkg\fR on stdout.
+Print the version of \fBgnupkg\fR on stdout and exit.
 .RE
 
 .SH ENVIRONMENT VARIABLES
@@ -258,8 +270,8 @@ Martin Carpenter, mcarpenter@free.fr, Copyright 2012.
 .SH SEE ALSO
 .sp
 .LP
-\fBmake\fR(1), \fBpkgmk\fR(1), \fBdepend\fR(4), \fBpkginfo\fR(4), \fBprototype\fR(4),
-\fBattributes\fR(5)
+\fBmake\fR(1), \fBpkgmk\fR(1), \fBpkgproto(1)\fR, \fBdepend\fR(4),
+\fBpkginfo\fR(4), \fBprototype\fR(4), \fBattributes\fR(5)
 .LP
 \fIGNU Coding Standards\fR, http://www.gnu.org/prep/standards
 

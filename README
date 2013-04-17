@@ -22,20 +22,21 @@ DESCRIPTION
      assumes the use of a standard  GNU  autoconf  "configure  &&
      make  &&  make  install" setup (although each of those steps
      can be overriden with the -c (configure), -b (build)  or  -i
-     (install)  flags  respectively.  Compound commands should be
+     (install)  flags  respectively). Compound commands should be
      specified as a string with && separators so  early  exit  on
      error  is guaranteed.  If the configure or build step should
-     be omitted then pass a colon to the appropriate flag.
+     be omitted then pass a colon (:)  to the appropriate flag.
 
 
      The source may either be a source directory or a tarball  of
-     the  form  .tar, .tgz, .tar.gz and .tar.bz2. If the supplied
+     the  form  .tar,  .tgz, .tar.gz or .tar.bz2. If the supplied
      filename looks like an URL then the tarball is  first  down-
-     loaded.  Package  name  and  version  are extracted from the
-     source name (assumes dash separator) and may be overriden by
-     command  line options (see -p below).  Similarly the package
-     prefix  (default:  GNU),  email  (default:  root),  category
-     (default: application) etc may be overridden.
+     loaded  using  either wget or curl. Package name and version
+     are extracted from the source name (assumes dash  separator)
+     and may be overriden by command line options (see -p below).
+     Similarly the package prefix (default: GNU), email (default:
+     root), category (default:  application), etc may also all be
+     overridden.
 
 
 OPTIONS
@@ -53,14 +54,13 @@ OPTIONS
                          directories created in /tmp on exit.
 
 
-     -i install_cmd      Install command.  The  default  is  make
-                         install.  The environment variable DEST-
-                         DIR is set to beneath the base temporary
-                         directory; explicitly unset this here if
+     -h                  Print help on stdout and exit.
 
 
 
-SunOS 5.10          Last change: 09 Jun 2012                    1
+
+
+SunOS 5.10          Last change: 17 Apr 2013                    1
 
 
 
@@ -71,6 +71,10 @@ User Commands                                           gnupkg(1)
 
 
 
+     -i install_cmd      Install command.  The  default  is  make
+                         install.  The environment variable DEST-
+                         DIR is set to beneath the base temporary
+                         directory; explicitly unset this here if
                          you wish to install elsewhere.  See  GNU
                          Coding  Standards  for  a description of
                          DESTDIR.
@@ -121,12 +125,8 @@ User Commands                                           gnupkg(1)
                          a directory structure).
 
 
-     -v                  Print the version of gnupkg on stdout.
 
-
-
-
-SunOS 5.10          Last change: 09 Jun 2012                    2
+SunOS 5.10          Last change: 17 Apr 2013                    2
 
 
 
@@ -135,6 +135,10 @@ SunOS 5.10          Last change: 09 Jun 2012                    2
 
 User Commands                                           gnupkg(1)
 
+
+
+     -v                  Print the version of  gnupkg  on  stdout
+                         and exit.
 
 
 ENVIRONMENT VARIABLES
@@ -168,8 +172,8 @@ AUTHOR
 
 
 SEE ALSO
-     make(1),  pkgmk(1),  depend(4),  pkginfo(4),   prototype(4),
-     attributes(5)
+     make(1), pkgmk(1), pkgproto(1), depend(4), pkginfo(4),  pro-
+     totype(4), attributes(5)
 
      GNU Coding Standards, http://www.gnu.org/prep/standards
 
@@ -188,11 +192,7 @@ SEE ALSO
 
 
 
-
-
-
-
-SunOS 5.10          Last change: 09 Jun 2012                    3
+SunOS 5.10          Last change: 17 Apr 2013                    3
 
 
 
