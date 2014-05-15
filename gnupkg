@@ -180,7 +180,7 @@ EOF
   cat > "$checkinstall" <<EOF
 #!/bin/sh
 expected_platform="$opt_arch"
-platform=`/sbin/uname -p`
+platform=\`/sbin/uname -p\`
 if [ \$platform != \$expected_platform ]; then
         echo "Error: This package must be installed on \$expected_platform platform"
         exit 1
