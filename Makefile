@@ -18,6 +18,7 @@ EMAIL=mcarpenter@free.fr
 PREFIX=MJC
 VENDOR=http://github.com/mcarpenter/$(BIN)
 VERSION=$(shell ./$(BIN) -v)
+PWD:=$(shell pwd)
 
 
 .PHONY: all
