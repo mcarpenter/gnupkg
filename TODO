@@ -5,3 +5,4 @@
 
  * Extensibility to IPS?
 
+ * Use fakeroot(1) to avoid running as root
