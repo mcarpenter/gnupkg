@@ -144,14 +144,14 @@ function unpack_tarball
 function pkg_configure
 {
   local build_dir="$1"
-  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_configure) || exit 1) || exit 1)
+  (cd "$build_dir" && export DESTDIR="$install_dir" && eval $opt_configure) || exit 1
 }
 
 # Build and install the package.
 function pkg_build
 {
   local build_dir="$1"
-  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_build) || exit 1) || exit 1)
+  (cd "$build_dir" && export DESTDIR="$install_dir" && eval $opt_build) || exit 1
 }
 
 # Install the package.
@@ -162,7 +162,7 @@ function pkg_install
   # Use subshell for opt_install so that we can use compound command
   # (eg opt_install="foo; bar") and also so that DESTDIR does not
   # pollute the current environment.
-  (cd "$build_dir" && export DESTDIR="$install_dir" && ($(eval echo $opt_install) || exit 1) || exit 1)
+  (cd "$build_dir" && export DESTDIR="$install_dir" && eval $opt_install) || exit 1
 }
 
 # Create a checkinstall file that checks that the installation architecture
@@ -208,7 +208,7 @@ i pkginfo
 i checkinstall
 i depend
 EOF
-  (cd "$install_dir" && pkgproto "./usr/local=/usr/local" >> "$prototype" || exit 1)
+  (set -o pipefail ; cd "$install_dir" && pkgproto "./usr/local=/usr/local" >> "$prototype") || exit 1
 }
 
 # Create the package pkginfo(4) file.
