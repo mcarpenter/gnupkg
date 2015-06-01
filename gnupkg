@@ -208,7 +208,8 @@ i pkginfo
 i checkinstall
 i depend
 EOF
-  (set -o pipefail ; cd "$install_dir" && pkgproto "./usr/local=/usr/local" >> "$prototype") || exit 1
+  # Don't include definition for / (first line) else pkgrm will fail
+  (set -o pipefail ; cd "$install_dir" && pkgproto "./=/" | tail +2 >> "$prototype") || exit 1
 }
 
 # Create the package pkginfo(4) file.
@@ -328,7 +329,7 @@ function gnupkg
   fi
   local install_dir="$base_dir/install"
   local pkg_dir="$base_dir/pkg"
-  mkdir -p "$install_dir/usr/local" "$pkg_dir"
+  mkdir -p "$install_dir" "$pkg_dir"
   # Create pkginfo first as a good sanity check
   make_pkginfo "$pkg_dir" "$src"
   pkg_configure "$build_dir"
