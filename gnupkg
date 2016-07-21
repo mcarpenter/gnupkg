@@ -50,7 +50,7 @@ function error
 # Return the realpath of the given argument.
 function realpath
 {
-  (cd "$1" && /bin/pwd) # NB. not pwd builtin
+  printf "$1" | perl -e 'use Cwd realpath; print realpath(readline(STDIN));'
 }
 
 # Return the package version.
@@ -309,6 +309,8 @@ function gnupkg
     warn "Configure:      $opt_configure"
     warn "Build:          $opt_build"
     warn "Install:        $opt_install"
+    warn "pkg:            $(pkg $src)"
+    warn "pkgstream:      $(pkgstream $src)"
   else
     trap "rm -rf '$base_dir'" EXIT 
   fi
