@@ -84,7 +84,6 @@ function name
   else
     echo "$opt_name"
   fi
-  exit
 }
 
 # Echo the package name constructed from the source and the prefix option.
