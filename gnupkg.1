@@ -132,7 +132,7 @@ for architecture-agnostic packages.
 .ad
 .RS 20n
 .rt
-Set the package category. The default is \fButility\fR. see
+Set the package category. The default is \fButility\fR. See
 \fBpkginfo(4)\fR.
 .RE
 
@@ -144,7 +144,7 @@ Set the package category. The default is \fButility\fR. see
 .ad
 .RS 20n
 .rt
-Set the package email. The default is \fBroot\fR. see \fBpkginfo(4)\fR.
+Set the package email. The default is \fBroot\fR. See \fBpkginfo(4)\fR.
 .RE
 
 .sp
@@ -168,6 +168,19 @@ Set the package name. The default is determined from the source filename.
 .rt
 Set the package prefix, which is typically a stock ticker symbol or
 author's initials or similar (eg. SUNW). The default is \fBGNU\fR.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fIpstamp\fR\fR
+.ad
+.RS 20n
+.rt
+Set the package production stamp, which may be used to distinguish
+between otherwise identical package versions. The default is the
+concatenation of the hostname and a timestamp. See \fBpkginfo(4)\fR.
 .RE
 
 .sp

@@ -8,6 +8,7 @@ opt_category=application # package category
 opt_email=root # pkginfo email
 opt_name='' # name of package (sans prefix)
 opt_prefix=GNU # package name prefix
+opt_pstamp='' # package production stamp
 opt_vendor='' # package vendor (URL)
 opt_version='' # version of package
 
@@ -236,6 +237,9 @@ ISTATES="S s 1 2 3"
 RSTATES="S s 1 2 3"
 BASEDIR="/"
 EOF
+    if [[ -n "$opt_pstamp" ]] ; then
+      echo "PSTAMP=\"$opt_pstamp\"" >>"$pkginfo"
+    fi
   fi
 }
 
@@ -373,7 +377,7 @@ do
       for name_value in $name_values ; do
         read -r name value <<< $(echo "$name_value" | sed 's/=/ /')
         case "$name" in
-          arch|category|classes|email|name|prefix|vendor|version)
+          arch|category|classes|email|name|prefix|pstamp|vendor|version)
             eval "opt_$name=$value"
             ;;
           *)
