@@ -60,7 +60,7 @@ OPTIONS
 
 
 
-SunOS 5.10          Last change: 17 Apr 2013                    1
+SunOS 5.10          Last change: 21 Jul 2016                    1
 
 
 
@@ -93,11 +93,11 @@ User Commands                                           gnupkg(1)
 
 
           category            Set  the  package   category.   The
-                              default is utility. see pkginfo(4).
+                              default is utility. See pkginfo(4).
 
 
           email               Set the package email. The  default
-                              is root. see pkginfo(4).
+                              is root. See pkginfo(4).
 
 
           name                Set the package name.  The  default
@@ -111,9 +111,30 @@ User Commands                                           gnupkg(1)
                               SUNW). The default is GNU.
 
 
+          pstamp              Set the package  production  stamp,
+                              which  may  be  used to distinguish
+                              between otherwise identical package
+                              versions.  The  default is the con-
+                              catenation of the  hostname  and  a
+                              timestamp. See pkginfo(4).
+
+
           vendor              Set the  package  vendor.  This  is
                               typically  a  URL.  The  default is
                               http://gnu.org/.
+
+
+
+
+SunOS 5.10          Last change: 21 Jul 2016                    2
+
+
+
+
+
+
+User Commands                                           gnupkg(1)
+
 
 
           version             Set  the   package   version.   The
@@ -123,18 +144,6 @@ User Commands                                           gnupkg(1)
 
      -s                  Create a package datastream (rather than
                          a directory structure).
-
-
-
-SunOS 5.10          Last change: 17 Apr 2013                    2
-
-
-
-
-
-
-User Commands                                           gnupkg(1)
-
 
 
      -v                  Print the version of  gnupkg  on  stdout
@@ -183,16 +192,7 @@ SEE ALSO
 
 
 
-
-
-
-
-
-
-
-
-
-SunOS 5.10          Last change: 17 Apr 2013                    3
+SunOS 5.10          Last change: 21 Jul 2016                    3
 
 
 
